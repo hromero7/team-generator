@@ -1,6 +1,7 @@
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+const Employee = require("./lib/Employee");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
@@ -9,6 +10,18 @@ const OUTPUT_DIR = path.resolve(__dirname, "output")
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+
+// const employee = new Employee("Horacio", 24, "example@example.com");
+// employee.getName();
+
+// console.log(employee.getName());
+
+// const managers = new Manager("Horacio", 24, "smsms@ssm.com", 3333);
+// console.log(managers.getName());
+
+// const engineers = new Intern("Horacio", 25, "sssd@ss.com", "UCR");
+// console.log(engineers.getSchool());
+
 
 const managerQuestions = [
     {
@@ -98,12 +111,42 @@ const internQuestions = [
 ];
 
 
-inquirer.prompt(managerQuestions).then(answers => {
-    if(answers.team == managerQuestions[4].choices[0]) {
-        inquirer.prompt(engineerQuestions);
-    } else if(answers.team == managerQuestions[4].choices[1]) {
-        inquirer.prompt(internQuestions);
-    } else {
-        // stop prompt here
-    }
-})
+function managerPrompt() {
+    inquirer.prompt(managerQuestions).then(answers => {
+        if(answers.team === managerQuestions[4].choices[0]) {
+            engineerPrompt();
+        } else if(answers.team === managerQuestions[4].choices[1]) {
+            internPrompt();
+        } else {
+            const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
+            console.log(manager);
+        }
+    })
+}
+
+
+function engineerPrompt() {
+    inquirer.prompt(engineerQuestions).then(answers => {
+        if(answers.team === engineerQuestions[4].choices[0]) {
+            engineerPrompt();
+        } else if(answers.team === engineerQuestions[4].choices[1]) {
+            internPrompt();
+        } else {
+            const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+            console.log(engineer);
+        }
+    })
+}
+
+
+function internPrompt() {
+    inquirer.prompt(internQuestions).then(answers => {
+        if(answers.team === internQuestions[4].choices[0]) {
+            engineerPrompt();
+        } else if(answers.team === internQuestions[4].choices[1]) {
+            internPrompt();
+        }
+    })
+}
+
+managerPrompt();
