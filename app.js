@@ -115,11 +115,23 @@ function managerPrompt() {
     inquirer.prompt(managerQuestions).then(answers => {
         if(answers.team === managerQuestions[4].choices[0]) {
             engineerPrompt();
+            const employee = new Employee(answers.name, answers.id, answers.email);
+            const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
+            return render(employee, manager);
         } else if(answers.team === managerQuestions[4].choices[1]) {
             internPrompt();
-        } else {
+            const employee = new Employee(answers.name, answers.id, answers.email);
             const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
-            console.log(manager);
+            return render(employee, manager);
+        } else {
+            const employee = new Employee(answers.name, answers.id, answers.email);
+            const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
+            fs.writeFileSync("team.html", render(employee), function(err) {
+                if(err) {
+                    throw err;
+                }
+                console.log("success");
+            })
         }
     })
 }
@@ -129,11 +141,15 @@ function engineerPrompt() {
     inquirer.prompt(engineerQuestions).then(answers => {
         if(answers.team === engineerQuestions[4].choices[0]) {
             engineerPrompt();
+            const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+            return render(engineer);
         } else if(answers.team === engineerQuestions[4].choices[1]) {
             internPrompt();
+            const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+            return render(engineer);
         } else {
             const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-            console.log(engineer);
+            return render(engineer);
         }
     })
 }
