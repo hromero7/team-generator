@@ -11,17 +11,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-// const employee = new Employee("Horacio", 24, "example@example.com");
-// employee.getName();
-
-// console.log(employee.getName());
-
-// const managers = new Manager("Horacio", 24, "smsms@ssm.com", 3333);
-// console.log(managers.getName());
-
-// const engineers = new Intern("Horacio", 25, "sssd@ss.com", "UCR");
-// console.log(engineers.getSchool());
-
+const teamMembers = [];
 
 const managerQuestions = [
     {
@@ -117,16 +107,19 @@ function managerPrompt() {
             engineerPrompt();
             const employee = new Employee(answers.name, answers.id, answers.email);
             const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
-            return render(employee, manager);
+            teamMembers.push(manager);
+            
         } else if(answers.team === managerQuestions[4].choices[1]) {
             internPrompt();
             const employee = new Employee(answers.name, answers.id, answers.email);
             const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
-            return render(employee, manager);
+            teamMembers.push(manager);
+            
         } else {
             const employee = new Employee(answers.name, answers.id, answers.email);
             const manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
-            fs.writeFileSync("team.html", render(employee), function(err) {
+            teamMembers.push(manager);
+            fs.writeFileSync(outputPath, render(teamMembers), function(err) {
                 if(err) {
                     throw err;
                 }
@@ -142,14 +135,20 @@ function engineerPrompt() {
         if(answers.team === engineerQuestions[4].choices[0]) {
             engineerPrompt();
             const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-            return render(engineer);
+            teamMembers.push(engineer);
         } else if(answers.team === engineerQuestions[4].choices[1]) {
             internPrompt();
             const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-            return render(engineer);
+            teamMembers.push(engineer);
         } else {
             const engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-            return render(engineer);
+            teamMembers.push(engineer);
+            fs.writeFileSync(outputPath, render(teamMembers), function(err) {
+                if(err) {
+                    throw err
+                }
+                console.log("success");
+            })
         }
     })
 }
@@ -159,8 +158,21 @@ function internPrompt() {
     inquirer.prompt(internQuestions).then(answers => {
         if(answers.team === internQuestions[4].choices[0]) {
             engineerPrompt();
+            const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+            teamMembers.push(intern);
         } else if(answers.team === internQuestions[4].choices[1]) {
             internPrompt();
+            const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+            teamMembers.push(intern);
+        } else {
+            const intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+            teamMembers.push(intern);
+            fs.writeFileSync(outputPath, render(teamMembers), function(err) {
+                if(err) {
+                    throw err
+                }
+                console.log("success");
+            })
         }
     })
 }
